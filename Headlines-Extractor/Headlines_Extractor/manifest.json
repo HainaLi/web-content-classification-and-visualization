@@ -9,7 +9,7 @@
   },
   "manifest_version": 2, 
   "permissions": [
-	"activeTab", "tabs", "<all_urls>", "webNavigation"
+	"activeTab", "tabs", "<all_urls>", "webNavigation", "http://www.lazycrossing.com/"
   ], 
   "content_scripts":[{
 	"js":["extras/jquery-2.1.4.min.js", "contentscript.js"],
