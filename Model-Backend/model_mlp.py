@@ -25,8 +25,7 @@ class WebProcessModel():
     def load_data(self):
         BASE_DIR = '.'
         TEXT_DATA_DIR = BASE_DIR + '/20_newsgroup/'
-        MAX_SEQUENCE_LENGTH = 1000
-        MAX_NB_WORDS = 1000
+        MAX_NB_WORDS = self.max_words
         VALIDATION_SPLIT = 0.2
         print('Processing text dataset')
 
@@ -77,8 +76,9 @@ class WebProcessModel():
 
     def __init__(self):
         max_words = 1000
+        self.max_words = max_words
         batch_size = 32
-        nb_epoch = 5
+        nb_epoch = 10
 
         print('Loading data...')
         (X_train, y_train), (X_test, y_test) = self.load_data()
@@ -123,14 +123,12 @@ class WebProcessModel():
         print('Test score:', score[0])
         print('Test accuracy:', score[1])
 
-        self.max_words = max_words
-
 
     def get_text_sequence(self, text):
         return self.tokenizer.texts_to_sequences([text])
 
 
-    def get_predict(self, text):
+    def get_predict(self, text, id):
         text_seq = self.get_text_sequence(text)
         X = self.tokenizer.sequences_to_matrix(text_seq, mode='binary')
         Y = self.model.predict(X)
@@ -140,6 +138,7 @@ class WebProcessModel():
         tuple_result.sort(reverse=True)
         
         result_json = {
+            'id': id,
             'text': text,
             'topics': [
                 {
@@ -165,7 +164,15 @@ if __name__ == '__main__':
     socket = context.socket(zmq.REP)
     socket.bind('tcp://127.0.0.1:5555')
     while True:
-        text = socket.recv()
-        print(text)
-        socket.send(web_model.get_predict(text))
+        data = socket.recv()
+        try:
+            jsondata = json.loads(data)
+        except:
+            print("Malformed JSON: \n%s"%(data))
+            jsondata = {"text": "NA", "id": 0}
+        text = jsondata["text"]
+        text = text.encode("ascii", "ignore")
+        id = jsondata["id"]
+        print(id, text)
+        socket.send(web_model.get_predict(text, id))
         

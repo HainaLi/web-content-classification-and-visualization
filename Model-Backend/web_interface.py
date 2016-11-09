@@ -10,14 +10,15 @@ def home():
 
 @app.route('/get_topic', methods=['POST'])
 def get_topic():
-    text = request.form['text']
-    text = text.encode("ascii", "ignore")
-    print "IN COMMING QUERY: " + text
+    
+    data = request.data
+    #text = text.encode("ascii", "ignore")
+    print "IN COMMING QUERY: " + data
 
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect('tcp://127.0.0.1:5555')
-    socket.send(text)
+    socket.send(data)
     result = socket.recv()
     return json.dumps(result)
 

@@ -33,7 +33,7 @@
              $.ajax({             
                  url : '/get_topic',
                  type : 'POST',
-                 data : {text: $('#text').val()},
+                 data : JSON.stringify({"id": 0, "text": $('#text').val()}),
                  dataType:'json',
                  success : function(data) {
                      setInfo(JSON.stringify(data));
