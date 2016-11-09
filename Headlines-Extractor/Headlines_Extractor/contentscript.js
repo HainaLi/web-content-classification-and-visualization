@@ -1,6 +1,11 @@
+
+
 var all_page_nodes = document.getElementsByTagName("*");
 console.log("all_page_nodes " + all_page_nodes.length)
 var possible_candidates = []
+var english = /^[A-Za-z0-9]*$/;
+
+var num_of_words = 6
 for (var i=0; i <all_page_nodes.length; i++) {
 	var current_node = all_page_nodes[i]
 	if (isHidden(current_node) == true) {
@@ -9,19 +14,66 @@ for (var i=0; i <all_page_nodes.length; i++) {
 	if (current_node.childNodes.length == 0) {
 		continue
 	}
+	
 	var innerT = current_node.innerText.trim()
 	
-
-	if (innerT.length < 100 && innerT.length > 70) {
-		possible_candidates.push(current_node)
-		console.log(innerT)
+	if (innerT.length >= 100 && innerT.length <= 70) {
+		
+		continue
 	}
+	if (innerT.toLowerCase().indexOf("sign in") !== -1 || innerT.toLowerCase().indexOf("log in") !== -1 || innerT.toLowerCase().indexOf("register") !== -1) {
+		continue
+	}
+	
+	innerT = current_node.innerText.split("/n")
+	for (var j=0; j<innerT.length; j++){
+		innerT[j] = innerT[j].trim()
+		if (num_words(innerT[j]) < num_of_words) {
+			continue
+		}
+		for (var k = 0; k<innerT[j].length; k++) {
+			if (english.test(innerT[j][k]) == false) {
+				continue
+			}
+		}
+		
+		possible_candidates.push(innerT[j])
+		
+	}
+	
 }
+
+possible_candidates = possible_candidates.filter( function( item, index, inputArray ) {
+           return inputArray.indexOf(item) == index;
+    });
+
+console.log( possible_candidates)
+console.log("possible_candidates " + possible_candidates.length)
+
+$.ajax({
+		type: "POST",
+		url: "http://lazycrossing.com:8080/get_topic",
+		data: "test sentence",
+		success: function(msg){
+			console.log(msg)
+	   },
+	   error: function(){
+			console.log("error: " + msg)
+	   }
+	 });
+
+
+
+
 function isHidden(el) {
     var style = window.getComputedStyle(el);
     return (style.display === 'none')
 }
-console.log("possible_candidates " + possible_candidates.length)
+
+function num_words(str) {
+	return str.split(" ").length
+}
+
 /*
 var placement = document.getElementById("circle_text").getBoundingClientRect()
 var x = placement.left;
