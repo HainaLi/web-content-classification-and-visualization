@@ -12,7 +12,8 @@
 	"activeTab", "tabs", "<all_urls>", "webNavigation", "http://www.lazycrossing.com/"
   ], 
   "content_scripts":[{
-	"js":["extras/jquery-2.1.4.min.js", "contentscript.js"],
+	"js":["extras/jquery-2.1.4.min.js", "extras/bootstrap.min.js", "contentscript.js"],
+	"css":["extras/bootstrap.min.js"],
 	"matches": ["*://*/"]
   }]
 }
