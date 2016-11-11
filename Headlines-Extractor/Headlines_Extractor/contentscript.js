@@ -26,7 +26,7 @@ for (var i=0; i <all_page_nodes.length; i++) {
 
 		continue
 	}
-	if (innerT.toLowerCase().indexOf("sponsored") !== -1 || innerT.toLowerCase().indexOf("click here") !== -1) { //rule out advertisements
+	if (innerT.toLowerCase().indexOf("sponsored") !== -1 || innerT.toLowerCase().indexOf("refresh the page") !== -1) { //rule out advertisements
 		continue
 	}
 
@@ -60,10 +60,6 @@ for (var i=0; i <all_page_nodes.length; i++) {
 
 
 }
-
-$(function () {
-  $('[data-toggle="popover"]').popover()
-})
 
 //draw boxes around text
 var results = []
@@ -123,20 +119,19 @@ function sendQuery(queryString, element) {
 				temp = []
 				tops = []
 				for (var i = 0; i < 3; i++) {
-					if (temp.length > 1) {
+					if (tops.length >1 ) {
+						
 						break
 					}
 					if (tops.indexOf(get_topic(parseInt(topics[i]["topic"]))) === -1) {
-						var score = parseFloat(topics[i]['score'])*100
 						tops.push(get_topic(parseInt(topics[i]["topic"])))
-						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":score.toPrecision(2)})
-						//temp.push(msg['text'])
+						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":parseFloat(topics[i]['score']).toPrecision(2)})
 					}
 					
 					
 				}
 				draw_box(element, toString(temp))
-				//draw_box(element, temp)
+				
 				
 		   },
 		   error: function(msg){
@@ -156,68 +151,24 @@ function num_words(str) {
 	return str.split(" ").length
 }
 
-function appear(element)
-{   
-   element.setAttribute("style", "display:block;")
-}
-
-function disappear()
-{  
-    element.setAttribute("style", "display:none;")
-}
-
 function get_topic(id) {
-	var topic_lookup = ["Atheism", "Comp", "Comp", "Comp", "Comp", "Comp", "Sale", "Auto", "Motor", "Baseball", "Hockey", "Crypto", "Electronics", "Med", "Space", "Christianity", "Politics", "Politics", "Politics", "Religion"]
+	var topic_lookup = ["Atheism", "Comp", "Comp", "Comp", "Comp", "Comp", "Sale", "Auto", "Motorcycles", "Baseball", "Hockey", "Crypto", "Electronics", "Med", "Space", "Christianity", "Politics", "Politics", "Politics", "Religion"]
 	
 	return topic_lookup[id]
 }
 
 function draw_box(element, text) {
 	element.style.outline = "medium dashed #0000FF"
-	element.style.zIndex = 10000
-	element.addAttribute('data-toggle', "popever")
-	element.addAttribute('data-content', text)
-	/*
+	element.style.zIndex = 10000000
+	
 	var new_element = document.createElement("p")
 	new_element.innerText = text
 	element.parentElement.insertBefore(new_element, element)
 	new_element.style.zIndex = 1000000
-	
-	if (element.getAttribute('class') !== null) {
-		console.log(element.getAttribute('class'))
-		new_element.setAttribute("class", element.getAttribute("class"))
-	}
-	*/
+	new_element.setAttribute("class", element.getAttribute("class"))
 	new_element.style.backgroundColor = "yellow"
 	new_element.style.color = "black"
-	new_element.style.opacity = "0.5";
-	new_element.style.display = 'inline'
-	/*
-	$(element).hover(function () {
-		$(new_element).style.display = 'inherit'
-	});
-	*/
-	/*
-	jQuery(function ($) {
-		$(element).annotator()
-			 .annotator('setupPlugins', {}, {
-	   // Disable the tags plugin
-	   Tags: false,
-	   // Filter plugin options
-	   Filter: {
-		 addAnnotationFilter: false, // Turn off default annotation filter
-		 filters: [{label: 'Quote', property: 'quote'}] // Add a quote filter
-	   }
-	 });
-	});
-	*/
-	
-
-
 	//new_element.style.fontSize = "small"
-	
-	//var space_element = document.create("br")
-	//element.parentElement.insertBefore(space_element, element)
 	/*
 	var placement = element.getBoundingClientRect()
 	var x = placement.left;
