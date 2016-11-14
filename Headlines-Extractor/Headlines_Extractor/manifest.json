@@ -13,6 +13,6 @@
   ], 
   "content_scripts":[{
 	"js":["extras/jquery-2.1.4.min.js", "contentscript.js"],
-	"matches": ["*://*/"]
+	"matches": ["<all_urls>"]
   }]
 }

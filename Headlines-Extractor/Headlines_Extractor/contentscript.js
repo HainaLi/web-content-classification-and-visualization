@@ -16,13 +16,15 @@ for (var i=0; i <all_page_nodes.length; i++) {
 		continue
 	}
 
-
+	if (current_node.innerText === undefined) {
+		continue
+	}
 	var innerT = current_node.innerText.trim()
 
 
 
 
-	if (innerT.length >= 100 && innerT.length <= 70) { //elements with inner Text length between 70 and 100
+	if (innerT.length >= 300 && innerT.length <= 70) { //elements with inner Text length between 70 and 100
 
 		continue
 	}
@@ -119,13 +121,10 @@ function sendQuery(queryString, element) {
 				temp = []
 				tops = []
 				for (var i = 0; i < 3; i++) {
-					if (tops.length >1 ) {
-						
-						break
-					}
+					var score = parseFloat(topics[i]['score'])*100
 					if (tops.indexOf(get_topic(parseInt(topics[i]["topic"]))) === -1) {
 						tops.push(get_topic(parseInt(topics[i]["topic"])))
-						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":parseFloat(topics[i]['score']).toPrecision(2)})
+						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":score.toPrecision(2)})
 					}
 					
 					
@@ -152,7 +151,7 @@ function num_words(str) {
 }
 
 function get_topic(id) {
-	var topic_lookup = ["Atheism", "Comp", "Comp", "Comp", "Comp", "Comp", "Sale", "Auto", "Motorcycles", "Baseball", "Hockey", "Crypto", "Electronics", "Med", "Space", "Christianity", "Politics", "Politics", "Politics", "Religion"]
+	var topic_lookup = ["Atheism", "Comp", "Comp", "Comp", "Comp", "Comp", "Sale", "Auto", "Motorcycles", "Sports", "Sports", "Crypto", "Electronics", "Med", "Space", "Christianity", "Politics", "Politics", "Politics", "Religion"]
 	
 	return topic_lookup[id]
 }
@@ -165,7 +164,10 @@ function draw_box(element, text) {
 	new_element.innerText = text
 	element.parentElement.insertBefore(new_element, element)
 	new_element.style.zIndex = 1000000
-	new_element.setAttribute("class", element.getAttribute("class"))
+	
+	if (element.getAttribute('class') !== null) {
+		new_element.setAttribute("class", element.getAttribute("class"))
+	}
 	new_element.style.backgroundColor = "yellow"
 	new_element.style.color = "black"
 	//new_element.style.fontSize = "small"
