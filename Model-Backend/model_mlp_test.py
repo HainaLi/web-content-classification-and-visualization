@@ -93,7 +93,7 @@ class WebProcessModel():
         max_words = 1000
         self.max_words = max_words
         batch_size = 32
-        nb_epoch = 5
+        nb_epoch = 100
 
         print('Loading data...')
         (X_train, y_train), (X_test, y_test) = self.load_data()

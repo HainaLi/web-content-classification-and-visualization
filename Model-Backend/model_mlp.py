@@ -78,7 +78,7 @@ class WebProcessModel():
         max_words = 1000
         self.max_words = max_words
         batch_size = 32
-        nb_epoch = 10
+        nb_epoch = 50
 
         print('Loading data...')
         (X_train, y_train), (X_test, y_test) = self.load_data()
@@ -106,7 +106,7 @@ class WebProcessModel():
         print('Building self.model...')
         self.model = Sequential()
         self.model.add(Dense(512, input_shape=(max_words,)))
-        self.model.add(Activation('relu'))
+        self.model.add(Activation('sigmoid'))
         self.model.add(Dropout(0.5))
         self.model.add(Dense(nb_classes))
         self.model.add(Activation('softmax'))        
