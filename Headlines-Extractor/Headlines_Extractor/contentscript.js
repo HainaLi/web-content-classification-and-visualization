@@ -121,10 +121,11 @@ function sendQuery(queryString, element) {
 				temp = []
 				tops = []
 				for (var i = 0; i < 3; i++) {
+				
 					var score = parseFloat(topics[i]['score'])*100
 					if (tops.indexOf(get_topic(parseInt(topics[i]["topic"]))) === -1) {
 						tops.push(get_topic(parseInt(topics[i]["topic"])))
-						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":score.toPrecision(2)})
+						temp.push({"topic": get_topic(parseInt(topics[i]["topic"])), "score":score.toPrecision(2) + "%"})
 					}
 					
 					
