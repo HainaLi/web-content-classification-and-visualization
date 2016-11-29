@@ -22,6 +22,21 @@ import zmq
 
 
 class WebProcessModel():
+    def build_category_map(self):
+	maplist = []
+	BASE_DIR = '.'
+        TEXT_DATA_DIR = BASE_DIR + '/20_newsgroup/'
+	texts = []  # list of text samples
+        labels_index = {}  # dictionary mapping label name to numeric id
+        labels = []  # list of label ids
+        for name in sorted(os.listdir(TEXT_DATA_DIR)):
+            path = os.path.join(TEXT_DATA_DIR, name)
+            if os.path.isdir(path):
+                label_id = len(labels_index)
+                print(label_id, name)
+		labels_index[label_id] = name
+	return labels_index    
+
     def load_data(self):
         BASE_DIR = '.'
         TEXT_DATA_DIR = BASE_DIR + '/20_newsgroup/'
@@ -78,7 +93,7 @@ class WebProcessModel():
         max_words = 1000
         self.max_words = max_words
         batch_size = 32
-        nb_epoch = 50
+        nb_epoch = 100
 
         print('Loading data...')
         (X_train, y_train), (X_test, y_test) = self.load_data()
@@ -106,7 +121,7 @@ class WebProcessModel():
         print('Building self.model...')
         self.model = Sequential()
         self.model.add(Dense(512, input_shape=(max_words,)))
-        self.model.add(Activation('sigmoid'))
+        self.model.add(Activation('relu'))
         self.model.add(Dropout(0.5))
         self.model.add(Dense(nb_classes))
         self.model.add(Activation('softmax'))        
@@ -128,31 +143,31 @@ class WebProcessModel():
         return self.tokenizer.texts_to_sequences([text])
 
 
-    def get_predict(self, text, id):
+    def get_predict(self, text, categories):
         text_seq = self.get_text_sequence(text)
         X = self.tokenizer.sequences_to_matrix(text_seq, mode='binary')
         Y = self.model.predict(X)
-        print(Y)
         result = Y.tolist()[0]
         tuple_result = [(result[idx], idx) for idx in xrange(len(result))]
         tuple_result.sort(reverse=True)
-        
+#        print('Top1 ', categories.get(tuple_result[0][1]), ' Top2 ',categories.get(tuple_result[1][1]), ' Top3 ',categories.get(tuple_result[2][1]))
         result_json = {
-            'id': id,
             'text': text,
             'topics': [
-                {
-                    'topic': str(tuple_result[0][1]),
+               {
+                    'topic': categories.get(tuple_result[0][1]),
                     "score": str(tuple_result[0][0])
-                },
-                {
-                    'topic': str(tuple_result[1][1]),
+
+               },
+
+               {
+                    'topic': categories.get(tuple_result[1][1]),
                     'score': str(tuple_result[1][0])
-                },
-                {
-                    'topic': str(tuple_result[2][1]),
+               },
+               {
+                    'topic': categories.get(tuple_result[2][1]),
                     'score': str(tuple_result[2][0])
-                }
+               }
             ]
         }
 
@@ -160,19 +175,10 @@ class WebProcessModel():
 
 if __name__ == '__main__':
     web_model = WebProcessModel()
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind('tcp://127.0.0.1:5555')
-    while True:
-        data = socket.recv()
-        try:
-            jsondata = json.loads(data)
-        except:
-            print("Malformed JSON: \n%s"%(data))
-            jsondata = {"text": "NA", "id": 0}
-        text = jsondata["text"]
-        text = text.encode("ascii", "ignore")
-        id = jsondata["id"]
-        print(id, text)
-        socket.send(web_model.get_predict(text, id))
+    categories = web_model.build_category_map()
+    with open('sampleTEXT.txt') as f:
+	content = f.readlines()
+    for s in content:
+	print(web_model.get_predict(s,categories))
+	print(' ')
         
